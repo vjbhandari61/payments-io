@@ -1,4 +1,5 @@
 const paymentsService = require("../services/paymentsService");
+const merchantService = require("../services/merchantService");
 
 const createPaymentIntent = async (req, res) => {
     const { amount, currency, merchantId } = req.body;
@@ -11,7 +12,7 @@ const createPaymentIntent = async (req, res) => {
             })
         };
 
-        const merchant = await paymentsService.getMerchantById(merchantId);
+        const merchant = await merchantService.getMerchantById(merchantId);
 
         if (!merchant) {
             return res.status(404).json({
@@ -29,7 +30,7 @@ const createPaymentIntent = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            intent
+            data: intent
         });
 
     } catch (error) {
@@ -72,7 +73,7 @@ const confirmPayment = async (req, res) => {
         
         return res.status(200).json({
             success: true,
-            confirmedPayment
+            data: confirmedPayment
         });
 
     } catch (error) {
@@ -85,7 +86,33 @@ const confirmPayment = async (req, res) => {
     }
 }
 
+const getPaymentDetails = async (req, res) => {
+    const paymentId = req.params.id;
+    try {
+        if (!paymentId) {
+            return res.status(404).json({
+                success: false,
+                error: "Payment Id is required"
+            })
+        }
+
+        const payment = await paymentsService.getPaymentDetailsByPaymentId(paymentId);
+        return res.status(200).json({
+            success: true,
+            data: payment
+        })
+    } catch (error) {
+        console.error("PaymentController.getPaymentDetails: ", error);
+
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        })
+    }
+}
+
 module.exports = {
     createPaymentIntent,
-    confirmPayment
+    confirmPayment,
+    getPaymentDetails
 };
