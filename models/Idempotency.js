@@ -5,8 +5,23 @@ const idempotencySchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "Merchant"
     },
+    paymentId: {
+        type: mongoose.Types.ObjectId,
+        ref: "Payments"
+    },
     key: {
         type: String
+    },
+    status: {
+        type: String,
+        enum: ["processing", "completed"],
+        default: "processing"
+    },
+    statusCode: {
+        type: Number
+    },
+    responseBody: {
+        type: mongoose.Schema.Types.Mixed
     },
     createdAt: {
         type: Date,
@@ -18,6 +33,7 @@ const idempotencySchema = new mongoose.Schema({
 idempotencySchema.index(
     {
         merchantId: 1,
+        paymentId: 1,
         key: 1
     },
     {

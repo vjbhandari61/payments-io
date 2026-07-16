@@ -53,7 +53,7 @@ const confirmPayment = async (req, res) => {
             })
         }
 
-        const payment = await paymentsService.getPaymentDetailsByPaymentId(paymentId);
+        const payment = req.payment || await paymentsService.getPaymentDetailsByPaymentId(paymentId);
         
         if (!payment) {
             return res.status(404).json({
